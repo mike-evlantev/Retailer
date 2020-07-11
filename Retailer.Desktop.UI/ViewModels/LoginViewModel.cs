@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Retailer.Desktop.UI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,12 @@ namespace Retailer.Desktop.UI.ViewModels
     {
         private string _username;
         private string _password;
+        private IApiHelper _apiHelper;
+
+        public LoginViewModel(IApiHelper apiHelper)
+        {
+            _apiHelper = apiHelper;
+        }
 
         public string Username
         {
@@ -45,9 +52,18 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
-        public void Login()
+        public async Task Login()
         {
-            Console.WriteLine();
+            try
+            {
+                var user = await _apiHelper.AuthenticateAsync(Username, Password);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+            
         }
     }
 }
