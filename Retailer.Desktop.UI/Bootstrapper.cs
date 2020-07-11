@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Retailer.Desktop.UI.Helpers;
 using Retailer.Desktop.UI.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Retailer.Desktop.UI
 {
@@ -18,6 +20,11 @@ namespace Retailer.Desktop.UI
         public Bootstrapper()
         {
             Initialize();
+
+            ConventionManager.AddElementConvention<PasswordBox>(
+            PasswordBoxHelper.BoundPasswordProperty,
+            "Password",
+            "PasswordChanged");
         }
 
         protected override void Configure()
