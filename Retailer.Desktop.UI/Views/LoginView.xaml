@@ -18,6 +18,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <!--Header-->
@@ -30,32 +31,45 @@
             RETAILER
         </TextBlock>
         
-        <!--Username row-->
+        <!--Error message-->
         <TextBlock Grid.Row="1" 
+                   Grid.Column="1" 
+                   Grid.ColumnSpan="2" 
+                   x:Name="ErrorMessage" 
+                   Margin="0 0 0 20"
+                   Foreground="Red"
+                   MaxWidth="300"
+                   TextWrapping="Wrap"
+                   Visibility="{Binding IsErrorVisible, 
+                                Converter={StaticResource BooleanToVisibilityConverter},
+                                FallbackValue=Collapsed}"/>
+
+        <!--Username row-->
+        <TextBlock Grid.Row="2" 
                    Grid.Column="1"
                    Margin="0 0 10 10">
             Username
         </TextBlock>
         <TextBox x:Name="Username"
-                 Grid.Row="1"
+                 Grid.Row="2"
                  Grid.Column="2"
-                 MinWidth="200"
+                 MinWidth="300"
                  Margin="0 0 0 10"/>
         
         <!--Password row-->
-        <TextBlock Grid.Row="2" 
+        <TextBlock Grid.Row="3" 
                    Grid.Column="1"
                    Margin="0 0 10 10">
             Password
         </TextBlock>
         <PasswordBox x:Name="Password"
-                     Grid.Row="2"
+                     Grid.Row="3"
                      Grid.Column="2"
-                     MinWidth="200"
+                     MinWidth="300"
                      Margin="0 0 0 10"/>
         
         <!--Login row-->
-        <Button Grid.Row="3"
+        <Button Grid.Row="4"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Padding="5 5"

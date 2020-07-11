@@ -12,6 +12,7 @@ namespace Retailer.Desktop.UI.ViewModels
     {
         private string _username;
         private string _password;
+        private string _errorMessage;
         private IApiHelper _apiHelper;
 
         public LoginViewModel(IApiHelper apiHelper)
@@ -52,16 +53,37 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
+        public bool IsErrorVisible
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(ErrorMessage))
+                    return true;
+                return false;
+            }
+        }
+
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set 
+            { 
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => IsErrorVisible);
+                NotifyOfPropertyChange(() => ErrorMessage);
+            }
+        }
+
         public async Task Login()
         {
             try
             {
+                ErrorMessage = "";
                 var user = await _apiHelper.AuthenticateAsync(Username, Password);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                throw;
+                ErrorMessage = ex.Message;
             }
             
         }
