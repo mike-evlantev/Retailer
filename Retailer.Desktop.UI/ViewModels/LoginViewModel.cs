@@ -77,6 +77,7 @@ namespace Retailer.Desktop.UI.ViewModels
             {
                 ErrorMessage = "";
                 var user = await _apiHelper.AuthenticateAsync(Username, Password);
+                await _apiHelper.GetLoggedInUserInfo(user.Token);
             }
             catch (Exception ex)
             {

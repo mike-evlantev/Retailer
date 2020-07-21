@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using Retailer.Core.Helpers;
+using Retailer.Core.Models;
 using Retailer.Desktop.UI.Helpers;
 using Retailer.Desktop.UI.ViewModels;
 using System;
@@ -34,6 +35,7 @@ namespace Retailer.Desktop.UI
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
+                .Singleton<IUserModel, UserModel>()
                 .Singleton<IApiHelper, ApiHelper>();
 
             GetType().Assembly.GetTypes()
