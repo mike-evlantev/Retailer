@@ -11,10 +11,12 @@ namespace Retailer.Core.Helpers
     public class ApiHelper : IApiHelper
     {
         private HttpClient _apiClient;
+        private IUserModel _loggedInUser;
 
-        public ApiHelper()
+        public ApiHelper(IUserModel loggedInUser)
         {
             InitializeClient();
+            _loggedInUser = loggedInUser;
         }
 
         private void InitializeClient()
@@ -37,6 +39,32 @@ namespace Retailer.Core.Helpers
             {
                 if (response.IsSuccessStatusCode)
                     return (await response.Content.ReadAsAsync<AuthenticatedUser>());
+                else
+                    throw new Exception(response.ReasonPhrase);
+            }
+        }
+
+        public async Task GetLoggedInUserInfo(string token)
+        {
+            UserModel user;
+
+            _apiClient.DefaultRequestHeaders.Clear();
+            _apiClient.DefaultRequestHeaders.Accept.Clear();
+            _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _apiClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+
+            using (HttpResponseMessage response = await _apiClient.GetAsync("/api/Account/GetLoggedInUser"))
+            {
+                if (response.IsSuccessStatusCode) 
+                {
+                    user = await response.Content.ReadAsAsync<UserModel>();
+                    _loggedInUser.Id = user.Id;
+                    _loggedInUser.Token = token;
+                    _loggedInUser.FirstName = user.FirstName;
+                    _loggedInUser.LastName = user.LastName;
+                    _loggedInUser.Email = user.Email;
+                    _loggedInUser.CreatedDate = user.CreatedDate;
+                }
                 else
                     throw new Exception(response.ReasonPhrase);
             }
