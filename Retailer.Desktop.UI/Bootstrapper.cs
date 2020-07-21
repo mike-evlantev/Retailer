@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Retailer.Core.Helpers;
 using Retailer.Desktop.UI.Helpers;
 using Retailer.Desktop.UI.ViewModels;
 using System;

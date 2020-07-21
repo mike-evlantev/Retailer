@@ -1,9 +1,6 @@
 ﻿using Caliburn.Micro;
-using Retailer.Desktop.UI.Helpers;
+using Retailer.Core.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Retailer.Desktop.UI.ViewModels
