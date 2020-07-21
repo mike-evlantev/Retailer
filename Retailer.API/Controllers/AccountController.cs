@@ -16,6 +16,8 @@ using Microsoft.Owin.Security.OAuth;
 using Retailer.API.Models;
 using Retailer.API.Providers;
 using Retailer.API.Results;
+using Retailer.Core.Models;
+using Retailer.Core.Repositories;
 
 namespace Retailer.API.Controllers
 {
@@ -371,6 +373,14 @@ namespace Retailer.API.Controllers
                 return GetErrorResult(result); 
             }
             return Ok();
+        }
+
+        [Route("GetLoggedInUser")]
+        public async Task<UserModel> GetUserByIdAsync()
+        {
+            string userId = RequestContext.Principal.Identity.GetUserId();
+            var repo = new UserRepository();
+            return await repo.GetUserByIdAsync(userId);
         }
 
         protected override void Dispose(bool disposing)
