@@ -1,7 +1,7 @@
-﻿using Retailer.Desktop.UI.Models;
+﻿using Retailer.Core.Models;
 using System.Threading.Tasks;
 
-namespace Retailer.Desktop.UI.Helpers
+namespace Retailer.Core.Helpers
 {
     public interface IApiHelper
     {
