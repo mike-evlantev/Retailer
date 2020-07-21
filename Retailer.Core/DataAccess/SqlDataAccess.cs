@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Retailer.Core.DataAccess
 {
-    public class SqlDataAccess
+    internal class SqlDataAccess
     {
         public string GetConnectionString(string name) => ConfigurationManager.ConnectionStrings[name].ConnectionString;
 
