@@ -1,7 +1,8 @@
 ﻿using Caliburn.Micro;
-using Retailer.Core.Helpers;
-using Retailer.Core.Models;
+using Retailer.Core.Helpers; // Should know nothing about core
+using Retailer.Core.Models; // Should know nothing about core
 using Retailer.Desktop.UI.Helpers;
+using Retailer.Desktop.UI.Services;
 using Retailer.Desktop.UI.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,9 @@ namespace Retailer.Desktop.UI
 
         protected override void Configure()
         {
-            _container.Instance(_container);
+            _container.Instance(_container)
+                .PerRequest<IProductService, ProductService>();
+
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
