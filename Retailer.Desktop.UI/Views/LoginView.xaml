@@ -26,9 +26,9 @@
                    Grid.Column="1" 
                    Grid.ColumnSpan="2" 
                    HorizontalAlignment="Center" 
-                   FontSize="30"
+                   FontSize="24"
                    Margin="0 0 0 20">
-            RETAILER
+            Retailer
         </TextBlock>
         
         <!--Error message-->
