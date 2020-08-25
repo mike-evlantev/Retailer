@@ -12,10 +12,12 @@ namespace Retailer.Core.Repositories
     {
         SqlDataAccess _sql = new SqlDataAccess();
         private readonly string _connectionStringName = "RetailerData";
-        public async Task<UserModel> GetUserByIdAsync(string userId)
-        {
-            return (await _sql.LoadDataAsync<UserModel, object>("dbo.spUserLookup", new { Id = userId }, _connectionStringName)).SingleOrDefault();
-
-        }
+        
+        public async Task<IUserModel> GetUserByIdAsync(string userId) => 
+            (await _sql.LoadDataAsync<UserModel, object>(
+                "dbo.spUserLookup", 
+                new { Id = userId }, 
+                _connectionStringName)
+            ).SingleOrDefault();
     }
 }
