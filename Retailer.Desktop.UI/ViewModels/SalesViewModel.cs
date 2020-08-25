@@ -1,4 +1,6 @@
 ﻿using Caliburn.Micro;
+using Retailer.Desktop.UI.Models;
+using Retailer.Desktop.UI.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,11 +12,17 @@ namespace Retailer.Desktop.UI.ViewModels
 {
     public class SalesViewModel : Screen
     {
-        private BindingList<string> _products;
-        private BindingList<string> _cart;
+        private IProductService _productService;
+        private BindingList<ProductModel> _products;
+        private BindingList<ProductModel> _cart;
         private int _itemQuantity;
 
-        public BindingList<string> Products
+        public SalesViewModel(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+        public BindingList<ProductModel> Products
         {
             get { return _products; }
             set 
@@ -24,7 +32,7 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
-        public BindingList<string> Cart
+        public BindingList<ProductModel> Cart
         {
             get { return _cart; }
             set
@@ -120,6 +128,18 @@ namespace Retailer.Desktop.UI.ViewModels
         public void Checkout()
         {
 
+        }
+
+        protected override async void OnViewLoaded(object view)
+        {
+            base.OnViewLoaded(view);
+            await LoadProducts();
+        }
+
+        private async Task LoadProducts()
+        {
+            var productsList = (await _productService.GetAllProducts()).ToList();
+            Products = new BindingList<ProductModel>(productsList);
         }
     }
 }

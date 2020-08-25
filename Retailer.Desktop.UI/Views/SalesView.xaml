@@ -40,7 +40,13 @@
                  Grid.Row="2" 
                  Grid.Column="0" 
                  MinHeight="100" 
-                 MinWidth="100"/>
+                 MinWidth="100">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <!--Column 1: Actions Stack-->
         <StackPanel Orientation="Vertical" 
                     Grid.Row="2" 
