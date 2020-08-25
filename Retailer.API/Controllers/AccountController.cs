@@ -376,7 +376,7 @@ namespace Retailer.API.Controllers
         }
 
         [Route("GetLoggedInUser")]
-        public async Task<UserModel> GetUserByIdAsync()
+        public async Task<IUserModel> GetUserByIdAsync()
         {
             string userId = RequestContext.Principal.Identity.GetUserId();
             var repo = new UserRepository();
