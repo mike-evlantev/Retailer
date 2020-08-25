@@ -19,6 +19,11 @@ namespace Retailer.Core.Helpers
             _loggedInUser = loggedInUser;
         }
 
+        public HttpClient ApiClient
+        {
+            get { return _apiClient; }
+        }
+
         private void InitializeClient()
         {
             _apiClient = new HttpClient();
