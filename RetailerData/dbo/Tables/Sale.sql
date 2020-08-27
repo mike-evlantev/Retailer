@@ -5,5 +5,6 @@
     [CreatedDate] DATETIME2 NOT NULL DEFAULT GETUTCDATE(), 
     [SubTotal] MONEY NOT NULL, 
     [Tax] MONEY NOT NULL, 
-    [Total] MONEY NOT NULL
+    [Total] MONEY NOT NULL, 
+    CONSTRAINT [FK_Sale_ToUser] FOREIGN KEY ([UserId]) REFERENCES [User]([Id])
 )
