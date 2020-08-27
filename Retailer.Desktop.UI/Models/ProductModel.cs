@@ -13,7 +13,6 @@ namespace Retailer.Desktop.UI.Models
         public string Description { get; set; }
         public double RetailPrice { get; set; }
         public int InStock { get; set; }
-        //public DateTime CreatedDate { get; set; }
-        //public DateTime LastModified { get; set; }
+        public bool IsTaxable { get; set; }
     }
 }

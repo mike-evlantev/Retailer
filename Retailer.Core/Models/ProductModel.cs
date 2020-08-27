@@ -15,5 +15,6 @@ namespace Retailer.Core.Models
         public int InStock { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime LastModified { get; set; }
+        public bool IsTaxable { get; set; }
     }
 }
