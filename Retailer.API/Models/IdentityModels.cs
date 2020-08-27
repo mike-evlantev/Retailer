@@ -21,7 +21,7 @@ namespace Retailer.API.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("EFData", throwIfV1Schema: false)
         {
         }
         
