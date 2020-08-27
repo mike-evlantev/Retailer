@@ -40,7 +40,8 @@
                  Grid.Row="2" 
                  Grid.Column="0" 
                  MinHeight="100" 
-                 MinWidth="100">
+                 MinWidth="100"
+                 SelectedItem="{Binding SelectedProduct}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}"/>
@@ -72,7 +73,13 @@
                  Grid.Row="2" 
                  Grid.Column="2" 
                  MinHeight="100" 
-                 MinWidth="100"/>
+                 MinWidth="100">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayText}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <!--Column 2: Totals-->
         <DockPanel Grid.Row="3"
                    Grid.Column="2">

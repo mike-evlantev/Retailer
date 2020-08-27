@@ -14,8 +14,9 @@ namespace Retailer.Desktop.UI.ViewModels
     {
         private IProductService _productService;
         private BindingList<ProductModel> _products;
-        private BindingList<ProductModel> _cart;
-        private int _itemQuantity;
+        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private ProductModel _selectedProduct;
+        private int _itemQuantity = 1;
 
         public SalesViewModel(IProductService productService)
         {
@@ -32,7 +33,7 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
-        public BindingList<ProductModel> Cart
+        public BindingList<CartItemModel> Cart
         {
             get { return _cart; }
             set
@@ -42,12 +43,27 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
+        public ProductModel SelectedProduct
+        { 
+            get { return _selectedProduct; }
+            set 
+            { 
+                _selectedProduct = value;
+                NotifyOfPropertyChange(() => SelectedProduct);
+                NotifyOfPropertyChange(() => CanAddToCart);
+            }
+        }
+
         public string Subtotal
         {
             get 
             {
-                // TODO: Replace with calculation
-                return "0.00";
+                decimal subTotal = 0;
+                foreach (var item in Cart)
+                {
+                    subTotal += (decimal)item.Product.RetailPrice * item.Quantity;
+                }
+                return subTotal.ToString("C"); // C - currency
             }
         }
 
@@ -76,6 +92,7 @@ namespace Retailer.Desktop.UI.ViewModels
             { 
                 _itemQuantity = value;
                 NotifyOfPropertyChange(() => ItemQuantity);
+                NotifyOfPropertyChange(() => CanAddToCart);
             }
         }
 
@@ -83,8 +100,8 @@ namespace Retailer.Desktop.UI.ViewModels
         {
             get
             {
-                // Is there a selection?
-                if (true)
+                // Is there a selection and is it in stock?
+                if (ItemQuantity > 0 && SelectedProduct?.InStock >= ItemQuantity)
                     return true;
 
                 return false;
@@ -93,10 +110,36 @@ namespace Retailer.Desktop.UI.ViewModels
 
         public void AddToCart()
         {
+            // If the same item already exists in the cart update qty
+            CartItemModel existingItem = Cart.FirstOrDefault(i => i.Product.Id == SelectedProduct.Id);
+            if (existingItem != null)
+            {
+                existingItem.Quantity += ItemQuantity;
+                // TODO: Refactor cart refresh
+                Cart.Remove(existingItem);
+                Cart.Add(existingItem);
+            }
+            else
+            {
+                // Add selection to cart
+                Cart.Add(new CartItemModel
+                {
+                    Product = SelectedProduct,
+                    Quantity = ItemQuantity
+                });
+            }
 
+            // Prep in-stock qty
+            SelectedProduct.InStock -= ItemQuantity;
+
+            // Reset ItemQuantity back to 1
+            ItemQuantity = 1;
+
+            NotifyOfPropertyChange(() => Subtotal);
+            NotifyOfPropertyChange(() => Cart);
         }
 
-        public bool CanRemoveToCart
+        public bool CanRemoveFromCart
         {
             get
             {
@@ -108,9 +151,9 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
-        public void RemoveToCart()
+        public void RemoveFromCart()
         {
-
+            NotifyOfPropertyChange(() => Subtotal);
         }
 
         public bool CanCheckout
