@@ -39,6 +39,7 @@ namespace Retailer.Desktop.UI
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<IUserModel, UserModel>()
+                .Singleton<IConfigHelper, ConfigHelper>()
                 .Singleton<IApiHelper, ApiHelper>();
 
             GetType().Assembly.GetTypes()

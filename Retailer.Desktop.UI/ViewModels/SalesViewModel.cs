@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using Retailer.Desktop.UI.Helpers;
 using Retailer.Desktop.UI.Models;
 using Retailer.Desktop.UI.Services;
 using System;
@@ -12,14 +13,16 @@ namespace Retailer.Desktop.UI.ViewModels
 {
     public class SalesViewModel : Screen
     {
+        private IConfigHelper _config;
         private IProductService _productService;
         private BindingList<ProductModel> _products;
         private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
         private ProductModel _selectedProduct;
         private int _itemQuantity = 1;
 
-        public SalesViewModel(IProductService productService)
+        public SalesViewModel(IConfigHelper config, IProductService productService)
         {
+            _config = config;
             _productService = productService;
         }
 
@@ -58,30 +61,23 @@ namespace Retailer.Desktop.UI.ViewModels
         {
             get 
             {
-                decimal subTotal = 0;
-                foreach (var item in Cart)
-                {
-                    subTotal += (decimal)item.Product.RetailPrice * item.Quantity;
-                }
-                return subTotal.ToString("C"); // C - currency
+                return CalculateSubtotal().ToString("C"); // C - currency
             }
         }
 
         public string Tax
         {
             get
-            {
-                // TODO: Replace with calculation
-                return "0.00";
+            {                
+                return CalculateTax().ToString("C"); // C - currency
             }
-        }
+        }        
 
         public string Total
         {
             get
             {
-                // TODO: Replace with calculation
-                return "0.00";
+                return CalculateTotal().ToString("C"); // C - currency
             }
         }
 
@@ -135,8 +131,10 @@ namespace Retailer.Desktop.UI.ViewModels
             // Reset ItemQuantity back to 1
             ItemQuantity = 1;
 
-            NotifyOfPropertyChange(() => Subtotal);
             NotifyOfPropertyChange(() => Cart);
+            NotifyOfPropertyChange(() => Subtotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public bool CanRemoveFromCart
@@ -154,6 +152,8 @@ namespace Retailer.Desktop.UI.ViewModels
         public void RemoveFromCart()
         {
             NotifyOfPropertyChange(() => Subtotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public bool CanCheckout
@@ -184,5 +184,29 @@ namespace Retailer.Desktop.UI.ViewModels
             var productsList = (await _productService.GetAllProducts()).ToList();
             Products = new BindingList<ProductModel>(productsList);
         }
+
+        private decimal CalculateSubtotal()
+        {
+            decimal subTotal = 0;
+            foreach (var item in Cart)
+            {
+                subTotal += (decimal)item.Product.RetailPrice * item.Quantity;
+            }
+            return subTotal;
+        }
+
+        private decimal CalculateTax()
+        {
+            decimal taxAmount = 0;
+            decimal taxRate = _config.GetTaxRate()/100; // 8.75/100 = 0.0875
+
+            foreach (var item in Cart)
+                if (item.Product.IsTaxable)
+                    taxAmount += (decimal)item.Product.RetailPrice * item.Quantity * taxRate;
+
+            return taxAmount;
+        }
+
+        private decimal CalculateTotal() => CalculateSubtotal() + CalculateTax(); 
     }
 }
