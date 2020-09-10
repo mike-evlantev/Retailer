@@ -97,7 +97,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <!--Column 2: Totals-->
+        <!--Column 2: Totals and Checkout-->
         <DockPanel Grid.Row="3"
                    Grid.Column="2">
             <TextBlock Text="Subtotal: "
