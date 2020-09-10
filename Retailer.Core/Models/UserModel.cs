@@ -10,5 +10,15 @@ namespace Retailer.Core.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public DateTime CreatedDate { get; set; }
+
+        public void Logout()
+        {
+            Id = "";
+            Token = "";
+            FirstName = "";
+            LastName = "";
+            Email = "";
+            CreatedDate = DateTime.MinValue;
+        }
     }
 }
