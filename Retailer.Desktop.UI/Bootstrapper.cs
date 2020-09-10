@@ -1,7 +1,9 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using Retailer.Core.Helpers; // Should know nothing about core
 using Retailer.Core.Models; // Should know nothing about core
 using Retailer.Desktop.UI.Helpers;
+using Retailer.Desktop.UI.Models;
 using Retailer.Desktop.UI.Services;
 using Retailer.Desktop.UI.ViewModels;
 using System;
@@ -31,7 +33,9 @@ namespace Retailer.Desktop.UI
         }
 
         protected override void Configure()
-        {
+        {            
+            _container.Instance(ConfigureAutoMapper());
+
             _container.Instance(_container)
                 .PerRequest<IProductService, ProductService>()
                 .PerRequest<ISaleService, SaleService>();
@@ -60,5 +64,16 @@ namespace Retailer.Desktop.UI
         protected override IEnumerable<object> GetAllInstances(Type service) => _container.GetAllInstances(service);
 
         protected override void BuildUp(object instance) => _container.BuildUp(instance);
+
+        private IMapper ConfigureAutoMapper()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductModel, ProductDisplayModel>();
+                cfg.CreateMap<CartItemModel, CartItemDisplayModel>();
+            });
+
+            return config.CreateMapper();
+        }
     }
 }
