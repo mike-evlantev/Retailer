@@ -90,7 +90,8 @@
                  Grid.Row="2" 
                  Grid.Column="2" 
                  MinHeight="100" 
-                 MinWidth="100">
+                 MinWidth="100"
+                 SelectedItem="{Binding SelectedCartItem}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding DisplayText}"/>

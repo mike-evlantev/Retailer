@@ -23,6 +23,7 @@ namespace Retailer.Desktop.UI.ViewModels
         private BindingList<ProductDisplayModel> _products;
         private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
         private ProductDisplayModel _selectedProduct;
+        private CartItemDisplayModel _selectedCartItem;
         private int _itemQuantity = 1;
 
         public SalesViewModel(IConfigHelper config, IProductService productService, ISaleService saleService, IMapper mapper)
@@ -61,6 +62,17 @@ namespace Retailer.Desktop.UI.ViewModels
                 _selectedProduct = value;
                 NotifyOfPropertyChange(() => SelectedProduct);
                 NotifyOfPropertyChange(() => CanAddToCart);
+            }
+        }
+
+        public CartItemDisplayModel SelectedCartItem
+        {
+            get { return _selectedCartItem; }
+            set
+            {
+                _selectedCartItem = value;
+                NotifyOfPropertyChange(() => SelectedCartItem);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
             }
         }
 
@@ -144,8 +156,8 @@ namespace Retailer.Desktop.UI.ViewModels
         {
             get
             {
-                // Is there a selection?
-                if (true)
+                // Is there a selection in the cart?
+                if (SelectedCartItem != null && SelectedCartItem.Product.InStock > 0)
                     return true;
 
                 return false;
@@ -154,6 +166,13 @@ namespace Retailer.Desktop.UI.ViewModels
 
         public void RemoveFromCart()
         {
+            SelectedCartItem.Product.InStock += 1;
+            if (SelectedCartItem.Quantity > 1)
+                SelectedCartItem.Quantity -= 1;
+            else
+                Cart.Remove(SelectedCartItem);
+
+
             NotifyOfPropertyChange(() => CanCheckout);
             NotifyOfPropertyChange(() => Subtotal);
             NotifyOfPropertyChange(() => Tax);
@@ -187,6 +206,7 @@ namespace Retailer.Desktop.UI.ViewModels
 
             // POST to API
             var saleId = await _saleService.CreateSale(sale);
+            // TODO: What happens next?
             var x = saleId;
         }
 
