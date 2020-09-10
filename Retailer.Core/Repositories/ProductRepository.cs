@@ -18,5 +18,11 @@ namespace Retailer.Core.Repositories
                 "dbo.spProduct_GetAll",
                 null,
                 _connectionStringName);
+
+        public async Task<IProductModel> GetProductByIdAsync(int productId) =>
+            (await _sql.LoadDataAsync<ProductModel, object>(
+                "dbo.spProduct_GetById",
+                new { Id = productId },
+                _connectionStringName)).FirstOrDefault();
     }
 }
