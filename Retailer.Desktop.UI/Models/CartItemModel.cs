@@ -11,12 +11,5 @@ namespace Retailer.Desktop.UI.Models
     {
         public ProductModel Product { get; set; }
         public int Quantity { get; set; }
-        public string DisplayText
-        {
-            get
-            {
-                return $"{Product.Name} ({Quantity})";
-            }
-        }
     }
 }
