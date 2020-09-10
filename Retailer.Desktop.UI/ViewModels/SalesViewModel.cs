@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using Retailer.Core.Helpers;
 using Retailer.Core.Models;
 using Retailer.Desktop.UI.Helpers;
@@ -16,21 +17,23 @@ namespace Retailer.Desktop.UI.ViewModels
     public class SalesViewModel : Screen
     {
         private IConfigHelper _config;
+        private IMapper _mapper;
         private IProductService _productService;
         private ISaleService _saleService;
-        private BindingList<ProductModel> _products;
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
-        private ProductModel _selectedProduct;
+        private BindingList<ProductDisplayModel> _products;
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
+        private ProductDisplayModel _selectedProduct;
         private int _itemQuantity = 1;
 
-        public SalesViewModel(IConfigHelper config, IProductService productService, ISaleService saleService)
+        public SalesViewModel(IConfigHelper config, IProductService productService, ISaleService saleService, IMapper mapper)
         {
             _config = config;
             _productService = productService;
             _saleService = saleService;
+            _mapper = mapper;
         }
 
-        public BindingList<ProductModel> Products
+        public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
             set 
@@ -40,7 +43,7 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set
@@ -50,7 +53,7 @@ namespace Retailer.Desktop.UI.ViewModels
             }
         }
 
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         { 
             get { return _selectedProduct; }
             set 
@@ -111,18 +114,13 @@ namespace Retailer.Desktop.UI.ViewModels
         public void AddToCart()
         {
             // If the same item already exists in the cart update qty
-            CartItemModel existingItem = Cart.FirstOrDefault(i => i.Product.Id == SelectedProduct.Id);
+            CartItemDisplayModel existingItem = Cart.FirstOrDefault(i => i.Product.Id == SelectedProduct.Id);
             if (existingItem != null)
-            {
                 existingItem.Quantity += ItemQuantity;
-                // TODO: Refactor cart refresh
-                Cart.Remove(existingItem);
-                Cart.Add(existingItem);
-            }
             else
             {
                 // Add selection to cart
-                Cart.Add(new CartItemModel
+                Cart.Add(new CartItemDisplayModel
                 {
                     Product = SelectedProduct,
                     Quantity = ItemQuantity
@@ -200,8 +198,9 @@ namespace Retailer.Desktop.UI.ViewModels
 
         private async Task LoadProducts()
         {
-            var productsList = (IList<ProductModel>)(await _productService.GetAllProducts());
-            Products = new BindingList<ProductModel>(productsList);
+            var productsList = await _productService.GetAllProducts();
+            var products = _mapper.Map<IList<ProductDisplayModel>>(productsList);
+            Products = new BindingList<ProductDisplayModel>(products);
         }
 
         private decimal CalculateSubtotal()
