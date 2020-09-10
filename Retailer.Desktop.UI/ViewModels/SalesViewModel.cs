@@ -157,7 +157,7 @@ namespace Retailer.Desktop.UI.ViewModels
             get
             {
                 // Is there a selection in the cart?
-                if (SelectedCartItem != null && SelectedCartItem.Product.InStock > 0)
+                if (SelectedCartItem != null && SelectedCartItem?.Quantity > 0)
                     return true;
 
                 return false;
@@ -171,8 +171,8 @@ namespace Retailer.Desktop.UI.ViewModels
                 SelectedCartItem.Quantity -= 1;
             else
                 Cart.Remove(SelectedCartItem);
-
-
+             
+            NotifyOfPropertyChange(() => CanAddToCart);
             NotifyOfPropertyChange(() => CanCheckout);
             NotifyOfPropertyChange(() => Subtotal);
             NotifyOfPropertyChange(() => Tax);
