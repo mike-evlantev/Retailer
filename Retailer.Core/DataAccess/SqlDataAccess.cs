@@ -32,5 +32,32 @@ namespace Retailer.Core.DataAccess
                 await connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task<int> SaveDataWithOutputAsync<T>(string storedProcedure, T parameters, string connectionStringName)
+        {
+            var connectionString = GetConnectionString(connectionStringName);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task ExecuteAsync<T>(string sql, T parameters, string connectionStringName)
+        {
+            var connectionString = GetConnectionString(connectionStringName);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.ExecuteAsync(sql, parameters);
+            }
+        }
+
+        public async Task<int> ExecuteWithOutputAsync<T>(string sql, T parameters, string connectionStringName)
+        {
+            var connectionString = GetConnectionString(connectionStringName);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.QuerySingleAsync<int>(sql, parameters);
+            }
+        }
     }
 }
