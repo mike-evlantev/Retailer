@@ -33,7 +33,8 @@ namespace Retailer.Desktop.UI
         protected override void Configure()
         {
             _container.Instance(_container)
-                .PerRequest<IProductService, ProductService>();
+                .PerRequest<IProductService, ProductService>()
+                .PerRequest<ISaleService, SaleService>();
 
             _container
                 .Singleton<IWindowManager, WindowManager>()

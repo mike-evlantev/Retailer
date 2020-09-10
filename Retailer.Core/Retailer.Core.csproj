@@ -53,14 +53,21 @@
   <ItemGroup>
     <Compile Include="DataAccess\SqlDataAccess.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
+    <Compile Include="Helpers\ConfigHelper.cs" />
     <Compile Include="Helpers\IApiHelper.cs" />
+    <Compile Include="Helpers\IConfigHelper.cs" />
     <Compile Include="Models\AuthenticatedUser.cs" />
     <Compile Include="Models\IProductModel.cs" />
     <Compile Include="Models\IUserModel.cs" />
     <Compile Include="Models\ProductModel.cs" />
+    <Compile Include="DataAccess\Models\SaleDetailDbModel.cs" />
+    <Compile Include="DataAccess\Models\SaleDbModel.cs" />
+    <Compile Include="Models\SaleDetailModel.cs" />
+    <Compile Include="Models\SaleModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ProductRepository.cs" />
+    <Compile Include="Repositories\SaleRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>

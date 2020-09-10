@@ -1,4 +1,6 @@
 ﻿using Caliburn.Micro;
+using Retailer.Core.Helpers;
+using Retailer.Core.Models;
 using Retailer.Desktop.UI.Helpers;
 using Retailer.Desktop.UI.Models;
 using Retailer.Desktop.UI.Services;
@@ -15,15 +17,17 @@ namespace Retailer.Desktop.UI.ViewModels
     {
         private IConfigHelper _config;
         private IProductService _productService;
+        private ISaleService _saleService;
         private BindingList<ProductModel> _products;
         private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
         private ProductModel _selectedProduct;
         private int _itemQuantity = 1;
 
-        public SalesViewModel(IConfigHelper config, IProductService productService)
+        public SalesViewModel(IConfigHelper config, IProductService productService, ISaleService saleService)
         {
             _config = config;
             _productService = productService;
+            _saleService = saleService;
         }
 
         public BindingList<ProductModel> Products
@@ -132,6 +136,7 @@ namespace Retailer.Desktop.UI.ViewModels
             ItemQuantity = 1;
 
             NotifyOfPropertyChange(() => Cart);
+            NotifyOfPropertyChange(() => CanCheckout);
             NotifyOfPropertyChange(() => Subtotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
@@ -151,6 +156,7 @@ namespace Retailer.Desktop.UI.ViewModels
 
         public void RemoveFromCart()
         {
+            NotifyOfPropertyChange(() => CanCheckout);
             NotifyOfPropertyChange(() => Subtotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
@@ -161,16 +167,29 @@ namespace Retailer.Desktop.UI.ViewModels
             get
             {
                 // Does the cart have anything?
-                if (true)
+                if (Cart.Count > 0)
                     return true;
 
                 return false;
             }
         }
 
-        public void Checkout()
+        public async Task Checkout()
         {
+            // Create SaleModel
+            var sale = new SaleModel();
+            foreach (var item in Cart)
+            {
+                sale.SaleDetails.Add(new SaleDetailModel
+                {
+                    ProductId = item.Product.Id,
+                    Quantity = item.Quantity
+                });
+            }
 
+            // POST to API
+            var saleId = await _saleService.CreateSale(sale);
+            var x = saleId;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -181,7 +200,7 @@ namespace Retailer.Desktop.UI.ViewModels
 
         private async Task LoadProducts()
         {
-            var productsList = (await _productService.GetAllProducts()).ToList();
+            var productsList = (IList<ProductModel>)(await _productService.GetAllProducts());
             Products = new BindingList<ProductModel>(productsList);
         }
 
