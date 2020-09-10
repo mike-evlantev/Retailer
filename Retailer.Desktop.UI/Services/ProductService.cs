@@ -1,4 +1,5 @@
 ﻿using Retailer.Core.Helpers;
+using Retailer.Core.Models;
 using Retailer.Desktop.UI.Models;
 using System;
 using System.Collections.Generic;

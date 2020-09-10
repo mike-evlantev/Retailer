@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Retailer.Core.Models
 {
-    internal class ProductModel : IProductModel
+    public class ProductModel : IProductModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
