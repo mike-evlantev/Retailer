@@ -208,6 +208,9 @@ namespace Retailer.Desktop.UI.ViewModels
             var saleId = await _saleService.CreateSale(sale);
             // TODO: What happens next?
             var x = saleId;
+
+            // Reset Cart
+            await ResetSalesViewModel();
         }
 
         protected override async void OnViewLoaded(object view)
@@ -221,6 +224,22 @@ namespace Retailer.Desktop.UI.ViewModels
             var productsList = await _productService.GetAllProducts();
             var products = _mapper.Map<IList<ProductDisplayModel>>(productsList);
             Products = new BindingList<ProductDisplayModel>(products);
+        }
+
+        private async Task ResetSalesViewModel()
+        {
+            Cart = new BindingList<CartItemDisplayModel>();
+            // TODO: Force selectedCartItem to clear if necessary
+
+            
+            // Reload inventory
+            await LoadProducts();
+
+            NotifyOfPropertyChange(() => CanAddToCart);
+            NotifyOfPropertyChange(() => CanCheckout);
+            NotifyOfPropertyChange(() => Subtotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         private decimal CalculateSubtotal()
