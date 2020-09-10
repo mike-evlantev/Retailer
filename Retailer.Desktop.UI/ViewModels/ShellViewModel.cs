@@ -1,27 +1,26 @@
 ﻿using Caliburn.Micro;
+using Retailer.Core.Helpers;
 using Retailer.Core.Models;
 using Retailer.Desktop.UI.Events.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Retailer.Desktop.UI.ViewModels
 {
     public class ShellViewModel : Conductor<object>, IHandle<LoggedInEventModel>
     {
+        private IApiHelper _apiHelper;
         private SimpleContainer _container;
         private IEventAggregator _events;
         private SalesViewModel _salesVM;
         private IUserModel _loggedInUser;
 
         public ShellViewModel(
+            IApiHelper apiHelper,
             SimpleContainer container,
             IEventAggregator events,
             SalesViewModel salesVM,
             IUserModel loggedInUser)
         {
+            _apiHelper = apiHelper;
             _container = container;
             _events = events;            
             _salesVM = salesVM;
@@ -52,6 +51,8 @@ namespace Retailer.Desktop.UI.ViewModels
 
         public void Logout()
         {
+            // Clear API Client
+            _apiHelper.ClearClient();
             // Clear logged-in user
             _loggedInUser.Logout();
             // Activate login view

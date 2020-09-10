@@ -74,5 +74,7 @@ namespace Retailer.Core.Helpers
                     throw new Exception(response.ReasonPhrase);
             }
         }
+
+        public void ClearClient() => _apiClient = new HttpClient();
     }
 }

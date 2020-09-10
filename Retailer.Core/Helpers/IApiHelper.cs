@@ -9,5 +9,6 @@ namespace Retailer.Core.Helpers
         HttpClient ApiClient { get; }
         Task<AuthenticatedUser> AuthenticateAsync(string username, string password);
         Task GetLoggedInUserInfo(string token);
+        void ClearClient();
     }
 }
