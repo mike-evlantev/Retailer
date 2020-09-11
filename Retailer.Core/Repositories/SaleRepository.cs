@@ -13,7 +13,6 @@ namespace Retailer.Core.Repositories
     public class SaleRepository
     {
         ConfigHelper _config = new ConfigHelper();
-        SqlDataAccess _sql;
         ProductRepository _productRepository = new ProductRepository();
         private readonly string _connectionStringName = "RetailerData";
 
@@ -54,12 +53,12 @@ namespace Retailer.Core.Repositories
             };
 
             var saleId = -1;
-            using (_sql = new SqlDataAccess())
+            using (var sql = new SqlDataAccess())
             {
                 try
                 {
-                    _sql.StartTransaction(_connectionStringName);
-                    saleId = await _sql.ExecuteWithOutputInTransactionAsync(
+                    sql.StartTransaction(_connectionStringName);
+                    saleId = await sql.ExecuteWithOutputInTransactionAsync(
                     $@"
                 	    INSERT INTO [dbo].[Sale](UserId, Subtotal, Tax, Total)
                         OUTPUT INSERTED.[Id]
@@ -81,7 +80,7 @@ namespace Retailer.Core.Repositories
                     {
                         detail.SaleId = saleId;
                         // TODO: Single Call? TVP
-                        await _sql.ExecuteInTransactionAsync(
+                        await sql.ExecuteInTransactionAsync(
                         $@"
                             INSERT INTO [dbo].[SaleDetail](SaleId, ProductId, Quantity, PurchasePrice, Tax)
                             VALUES(
@@ -101,16 +100,39 @@ namespace Retailer.Core.Repositories
                             });
                     }
 
-                    _sql.CommitTransaction();
+                    sql.CommitTransaction();
                 }
                 catch
                 {
-                    _sql.RollbackTransaction();
+                    sql.RollbackTransaction();
                     throw;
                 }
             }
 
             return saleId;
+        }
+
+        public async Task<IEnumerable<UserSaleModel>> GetAllUsersSalesAsync()
+        {
+            using (var sql = new SqlDataAccess())
+            {
+                return await sql.QueryAsync<UserSaleModel, object>(
+                $@"
+                	SELECT
+                        U.[FirstName], 
+                        U.[LastName], 
+                        U.[Email],
+                        S.[CreatedDate], 
+                        S.[Subtotal], 
+                        S.[Tax], 
+                        S.[Total]
+                    FROM [dbo].[Sale] S
+                    INNER JOIN [dbo].[User] U 
+                        ON S.UserId = U.Id
+                ",
+                null,
+                _connectionStringName);
+            } 
         }
     }
 }

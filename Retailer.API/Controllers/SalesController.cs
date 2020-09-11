@@ -16,12 +16,21 @@ namespace Retailer.API.Controllers
     [RoutePrefix("api/Sales")]
     public class SalesController : ApiController
     {
+        private readonly SaleRepository _saleRepository = new SaleRepository();
+
+        [HttpPost]
         [Route("createSale")]
-        public async Task<int> CreateSale(SaleModel sale)
+        public async Task<int> CreateSaleAsync(SaleModel sale)
         {
             string userId = RequestContext.Principal.Identity.GetUserId();
-            var saleRepository = new SaleRepository();
-            return await saleRepository.CreateSaleAsync(userId, sale);
+            return await _saleRepository.CreateSaleAsync(userId, sale);
+        }
+
+        [HttpGet]
+        [Route("getUsersSales")]
+        public async Task<IEnumerable<UserSaleModel>> GetUsersSalesAsync()
+        {
+            return await _saleRepository.GetAllUsersSalesAsync();
         }
     }
 }
