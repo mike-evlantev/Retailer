@@ -10,8 +10,11 @@ using System.Threading.Tasks;
 
 namespace Retailer.Core.DataAccess
 {
-    internal class SqlDataAccess
+    internal class SqlDataAccess : IDisposable
     {
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
+
         public string GetConnectionString(string name) => ConfigurationManager.ConnectionStrings[name].ConnectionString;
 
         public async Task<IEnumerable<T>> LoadDataAsync<T, U>(string storedProcedure, U parameters, string connectionStringName)
@@ -58,6 +61,53 @@ namespace Retailer.Core.DataAccess
             {
                 return await connection.QuerySingleAsync<int>(sql, parameters);
             }
+        }
+
+        public async Task<IEnumerable<T>> QueryInTransactionAsync<T, U>(string storedProcedure, U parameters)
+            => await _connection.QueryAsync<T>(
+                storedProcedure, 
+                parameters, 
+                commandType: CommandType.StoredProcedure, 
+                transaction: _transaction);
+
+        public async Task ExecuteInTransactionAsync<T>(string sql, T parameters) 
+            => await _connection.ExecuteAsync(
+                sql, 
+                parameters, 
+                transaction: _transaction);
+
+        public async Task<int> ExecuteWithOutputInTransactionAsync<T>(string sql, T parameters)
+            => await _connection.QuerySingleAsync<int>(
+                sql, 
+                parameters,
+                transaction: _transaction);
+
+        // Open connection/start transaction
+        public void StartTransaction(string connectionStringName)
+        {
+            var connectionString = GetConnectionString(connectionStringName);
+            _connection = new SqlConnection(connectionString);
+            _connection.Open();
+            _transaction = _connection.BeginTransaction();
+        }
+
+        // Close connection/stop transaction
+        public void CommitTransaction()
+        {
+            _transaction?.Commit();
+            _connection?.Close();
+        }
+
+        public void RollbackTransaction()
+        {
+            _transaction?.Rollback();
+            _connection?.Close();
+        }
+
+        // Dispose
+        public void Dispose()
+        {
+            CommitTransaction();
         }
     }
 }

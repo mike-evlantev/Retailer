@@ -13,7 +13,7 @@ namespace Retailer.Core.Repositories
     public class SaleRepository
     {
         ConfigHelper _config = new ConfigHelper();
-        SqlDataAccess _sql = new SqlDataAccess();
+        SqlDataAccess _sql;
         ProductRepository _productRepository = new ProductRepository();
         private readonly string _connectionStringName = "RetailerData";
 
@@ -53,48 +53,61 @@ namespace Retailer.Core.Repositories
                 UserId = userId
             };
 
-            var saleId = await _sql.ExecuteWithOutputAsync(
-                $@"
-                	INSERT INTO [dbo].[Sale](UserId, Subtotal, Tax, Total)
-                    OUTPUT INSERTED.[Id]
-                    VALUES(
-                        @{nameof(saleModel.UserId)}, 
-                        @{nameof(saleModel.Subtotal)}, 
-                        @{nameof(saleModel.Tax)}, 
-                        @{nameof(saleModel.Total)})
-                ",
-                new
-                { 
-                    saleModel.UserId,
-                    saleModel.Subtotal,
-                    saleModel.Tax,
-                    saleModel.Total
-                }, 
-                _connectionStringName);
-
-            foreach (var detail in saleDetails)
+            var saleId = -1;
+            using (_sql = new SqlDataAccess())
             {
-                detail.SaleId = saleId;
-                // TODO: Single Call? TVP
-                await _sql.ExecuteAsync(
+                try
+                {
+                    _sql.StartTransaction(_connectionStringName);
+                    saleId = await _sql.ExecuteWithOutputInTransactionAsync(
                     $@"
-                        INSERT INTO [dbo].[SaleDetail](SaleId, ProductId, Quantity, PurchasePrice, Tax)
+                	    INSERT INTO [dbo].[Sale](UserId, Subtotal, Tax, Total)
+                        OUTPUT INSERTED.[Id]
                         VALUES(
-                            @{nameof(detail.SaleId)}, 
-                            @{nameof(detail.ProductId)}, 
-                            @{nameof(detail.Quantity)}, 
-                            @{nameof(detail.PurchasePrice)}, 
-                            @{nameof(detail.Tax)})
+                            @{nameof(saleModel.UserId)}, 
+                            @{nameof(saleModel.Subtotal)}, 
+                            @{nameof(saleModel.Tax)}, 
+                            @{nameof(saleModel.Total)})
                     ",
-                    new 
-                    { 
-                        detail.SaleId, 
-                        detail.ProductId, 
-                        detail.Quantity, 
-                        detail.PurchasePrice,
-                        detail.Tax 
-                    }, 
-                    _connectionStringName);
+                    new
+                    {
+                        saleModel.UserId,
+                        saleModel.Subtotal,
+                        saleModel.Tax,
+                        saleModel.Total
+                    });
+
+                    foreach (var detail in saleDetails)
+                    {
+                        detail.SaleId = saleId;
+                        // TODO: Single Call? TVP
+                        await _sql.ExecuteInTransactionAsync(
+                        $@"
+                            INSERT INTO [dbo].[SaleDetail](SaleId, ProductId, Quantity, PurchasePrice, Tax)
+                            VALUES(
+                                @{nameof(detail.SaleId)}, 
+                                @{nameof(detail.ProductId)}, 
+                                @{nameof(detail.Quantity)}, 
+                                @{nameof(detail.PurchasePrice)}, 
+                                @{nameof(detail.Tax)})
+                        ",
+                            new
+                            {
+                                detail.SaleId,
+                                detail.ProductId,
+                                detail.Quantity,
+                                detail.PurchasePrice,
+                                detail.Tax
+                            });
+                    }
+
+                    _sql.CommitTransaction();
+                }
+                catch
+                {
+                    _sql.RollbackTransaction();
+                    throw;
+                }
             }
 
             return saleId;
