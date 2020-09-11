@@ -14,6 +14,7 @@ namespace Retailer.Core.DataAccess
     {
         private IDbConnection _connection;
         private IDbTransaction _transaction;
+        private bool _isClosed = false;
 
         public string GetConnectionString(string name) => ConfigurationManager.ConnectionStrings[name].ConnectionString;
 
@@ -89,6 +90,7 @@ namespace Retailer.Core.DataAccess
             _connection = new SqlConnection(connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
+            _isClosed = false;
         }
 
         // Close connection/stop transaction
@@ -96,18 +98,33 @@ namespace Retailer.Core.DataAccess
         {
             _transaction?.Commit();
             _connection?.Close();
+            _isClosed = true;
         }
 
         public void RollbackTransaction()
         {
             _transaction?.Rollback();
             _connection?.Close();
+            _isClosed = true;
         }
 
         // Dispose
         public void Dispose()
         {
-            CommitTransaction();
+            if (!_isClosed)
+            {
+                try
+                {
+                    CommitTransaction();
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+
+            _transaction = null;
+            _connection = null;
         }
     }
 }
