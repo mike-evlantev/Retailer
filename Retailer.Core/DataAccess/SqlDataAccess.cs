@@ -46,6 +46,23 @@ namespace Retailer.Core.DataAccess
             }
         }
 
+        public async Task<IEnumerable<T>> QueryAsync<T, U>(string sql, U parameters, string connectionStringName)
+        {
+            var connectionString = GetConnectionString(connectionStringName);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var rows = await connection.QueryAsync<T>(sql, parameters);
+                return rows;
+            }
+        }
+
+        public async Task<IEnumerable<T>> QueryInTransactionAsync<T, U>(string storedProcedure, U parameters)
+            => await _connection.QueryAsync<T>(
+                storedProcedure, 
+                parameters, 
+                commandType: CommandType.StoredProcedure, 
+                transaction: _transaction);
+
         public async Task ExecuteAsync<T>(string sql, T parameters, string connectionStringName)
         {
             var connectionString = GetConnectionString(connectionStringName);
@@ -63,13 +80,6 @@ namespace Retailer.Core.DataAccess
                 return await connection.QuerySingleAsync<int>(sql, parameters);
             }
         }
-
-        public async Task<IEnumerable<T>> QueryInTransactionAsync<T, U>(string storedProcedure, U parameters)
-            => await _connection.QueryAsync<T>(
-                storedProcedure, 
-                parameters, 
-                commandType: CommandType.StoredProcedure, 
-                transaction: _transaction);
 
         public async Task ExecuteInTransactionAsync<T>(string sql, T parameters) 
             => await _connection.ExecuteAsync(
