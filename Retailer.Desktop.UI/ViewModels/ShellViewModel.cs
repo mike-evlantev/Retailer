@@ -54,7 +54,7 @@ namespace Retailer.Desktop.UI.ViewModels
             // Clear API Client
             _apiHelper.ClearClient();
             // Clear logged-in user
-            _loggedInUser.Logout();
+            _loggedInUser.ClearUser();
             // Activate login view
             ActivateItem(_container.GetInstance<LoginViewModel>());
 
@@ -63,8 +63,10 @@ namespace Retailer.Desktop.UI.ViewModels
 
         public void ExitApp()
         {
+            // Clear API Client
+            _apiHelper.ClearClient();
             // Clear logged-in user
-            _loggedInUser.Logout();
+            _loggedInUser.ClearUser();
             TryClose();
         }
     }

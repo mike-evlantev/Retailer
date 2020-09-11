@@ -11,7 +11,7 @@ namespace Retailer.Core.Models
         public string Email { get; set; }
         public DateTime CreatedDate { get; set; }
 
-        public void Logout()
+        public void ClearUser()
         {
             Id = "";
             Token = "";

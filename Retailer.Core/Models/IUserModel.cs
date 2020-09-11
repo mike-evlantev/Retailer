@@ -11,6 +11,6 @@ namespace Retailer.Core.Models
         string LastName { get; set; }
         string Token { get; set; }
 
-        void Logout();
+        void ClearUser();
     }
 }
