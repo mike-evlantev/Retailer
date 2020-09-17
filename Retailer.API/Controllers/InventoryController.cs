@@ -18,12 +18,14 @@ namespace Retailer.API.Controllers
 
         [HttpPost]
         [Route("addItem")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<int> AddInventoryItem(InventoryItemModel item)
         {
             return await _inventoryRepository.AddInventoryItem(item);
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<InventoryItemModel>> GetInventory()
         {
             return await _inventoryRepository.GetInventory();

@@ -15,6 +15,7 @@ namespace Retailer.API.Controllers
     public class ProductsController : ApiController
     {
         //[Route("getall")]
+        [Authorize(Roles = "Cashier")]
         public async Task<IEnumerable<IProductModel>> GetAllProducts()
         {
             var repo = new ProductRepository();

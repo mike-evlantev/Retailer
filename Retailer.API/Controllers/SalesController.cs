@@ -20,6 +20,7 @@ namespace Retailer.API.Controllers
 
         [HttpPost]
         [Route("createSale")]
+        [Authorize(Roles = "Admin,Cashier")]
         public async Task<int> CreateSaleAsync(SaleModel sale)
         {
             string userId = RequestContext.Principal.Identity.GetUserId();
@@ -28,6 +29,7 @@ namespace Retailer.API.Controllers
 
         [HttpGet]
         [Route("getUsersSales")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IEnumerable<UserSaleModel>> GetUsersSalesAsync()
         {
             return await _saleRepository.GetAllUsersSalesAsync();
